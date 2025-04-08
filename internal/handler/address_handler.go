@@ -2,18 +2,22 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"geoservise-jwt/internal/model"
+	"geoservise-jwt/internal/responder"
 	"geoservise-jwt/internal/service"
 	"net/http"
 )
 
 type AddressHandler struct {
-	Service *service.Service
+	Service   *service.Service
+	Responder responder.Responder
 }
 
-func NewAddressHandler(service *service.Service) *AddressHandler {
+func NewAddressHandler(service *service.Service, responder responder.Responder) *AddressHandler {
 	return &AddressHandler{
-		Service: service,
+		Service:   service,
+		Responder: responder,
 	}
 }
 
@@ -32,16 +36,15 @@ func NewAddressHandler(service *service.Service) *AddressHandler {
 func (h *AddressHandler) Search(w http.ResponseWriter, r *http.Request) {
 	var req model.RequestAddressSearch
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Не удалось выполнить декодирование", http.StatusBadRequest)
+		h.Responder.Error(w, http.StatusBadRequest, fmt.Errorf("невалидный запрос"))
 		return
 	}
 	addresses, err := h.Service.Search(r.Context(), req.Query)
 	if err != nil {
-		http.Error(w, "ошибка поиска", http.StatusInternalServerError)
+		h.Responder.Error(w, http.StatusBadRequest, fmt.Errorf("ошибка поиска"))
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(model.ResponseAddress{Addresses: addresses})
+	h.Responder.JSON(w, http.StatusOK, model.ResponseAddress{Addresses: addresses})
 }
 
 // @Summary Geocode by coordinates
@@ -59,14 +62,13 @@ func (h *AddressHandler) Search(w http.ResponseWriter, r *http.Request) {
 func (h *AddressHandler) Geocode(w http.ResponseWriter, r *http.Request) {
 	var req model.RequestGeocode
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Не удалось выполнить декодирование", http.StatusBadRequest)
+		h.Responder.Error(w, http.StatusBadRequest, fmt.Errorf("невалидный запрос"))
 		return
 	}
 	addresses, err := h.Service.Geocode(r.Context(), req.Lat, req.Lng)
 	if err != nil {
-		http.Error(w, "ошибка поиска", http.StatusInternalServerError)
+		h.Responder.Error(w, http.StatusBadRequest, fmt.Errorf("ошибка поиска"))
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(model.ResponseAddress{Addresses: addresses})
+	h.Responder.JSON(w, http.StatusOK, model.ResponseAddress{Addresses: addresses})
 }

@@ -3,6 +3,7 @@ package app
 import (
 	"geoservise-jwt/internal/auth"
 	"geoservise-jwt/internal/handler"
+	"geoservise-jwt/internal/responder"
 	"geoservise-jwt/internal/router"
 	"geoservise-jwt/internal/service"
 	"github.com/ekomobile/dadata/v2"
@@ -30,8 +31,11 @@ func NewApp(apiKey, secretKey string) *App {
 	// init service
 	s := service.NewService(api)
 
+	// init responder
+	resp := responder.NewJSONResponder()
+
 	// init handlers
-	h := handler.NewAddressHandler(s)
+	h := handler.NewAddressHandler(s, resp)
 
 	// init jwt
 	auth.InitJWT()
