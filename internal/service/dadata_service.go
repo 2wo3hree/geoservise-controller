@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+type GeoService interface {
+	Search(ctx context.Context, query string) ([]*model.Address, error)
+	Geocode(ctx context.Context, latStr, lngStr string) ([]*model.Address, error)
+}
+
 type Service struct {
 	api *suggest.Api
 }

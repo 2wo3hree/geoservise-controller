@@ -10,11 +10,11 @@ import (
 )
 
 type AddressHandler struct {
-	Service   *service.Service
+	Service   service.GeoService
 	Responder responder.Responder
 }
 
-func NewAddressHandler(service *service.Service, responder responder.Responder) *AddressHandler {
+func NewAddressHandler(service service.GeoService, responder responder.Responder) *AddressHandler {
 	return &AddressHandler{
 		Service:   service,
 		Responder: responder,
