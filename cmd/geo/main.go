@@ -19,7 +19,7 @@ import (
 func main() {
 	cfg := config.LoadConfig()
 
-	application := app.NewApp(cfg.ApiKey, cfg.SecretKey)
+	application := app.NewApp(cfg.ApiKey, cfg.SecretKey, cfg.RedisHost, cfg.RedisPort)
 
 	s := server.NewGeoServer(":8080", application.Router)
 	shutdown.Gracefully(s)

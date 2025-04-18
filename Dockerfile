@@ -19,7 +19,7 @@ FROM alpine:latest
 WORKDIR /root/
 
 # Устанавливаем зависимости
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates redis
 
 # Копируем скомпилированный бинарник (без лишних файлов)
 COPY --from=builder /app/server .

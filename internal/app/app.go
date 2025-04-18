@@ -2,6 +2,7 @@ package app
 
 import (
 	"geoservise-jwt/internal/auth"
+	"geoservise-jwt/internal/cache"
 	"geoservise-jwt/internal/handler"
 	"geoservise-jwt/internal/responder"
 	"geoservise-jwt/internal/router"
@@ -10,6 +11,7 @@ import (
 	"github.com/ekomobile/dadata/v2/client"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth"
+	"time"
 )
 
 type App struct {
@@ -18,7 +20,7 @@ type App struct {
 	Handlers *handler.AddressHandler
 }
 
-func NewApp(apiKey, secretKey string) *App {
+func NewApp(apiKey, secretKey, redisHost, redisPort string) *App {
 	// init Dadata client
 	creds := client.Credentials{
 		ApiKeyValue:    apiKey,
@@ -28,14 +30,18 @@ func NewApp(apiKey, secretKey string) *App {
 		client.WithCredentialProvider(&creds),
 	)
 
+	rdb := cache.NewRedisClient(redisHost, redisPort)
+
 	// init service
 	s := service.NewService(api)
+
+	cachedService := service.NewCachedGeoService(s, rdb, time.Hour)
 
 	// init responder
 	resp := responder.NewJSONResponder()
 
 	// init handlers
-	h := handler.NewAddressHandler(s, resp)
+	h := handler.NewAddressHandler(cachedService, resp)
 
 	// init jwt
 	auth.InitJWT()

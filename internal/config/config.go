@@ -9,6 +9,8 @@ import (
 type Config struct {
 	ApiKey    string
 	SecretKey string
+	RedisHost string
+	RedisPort string
 }
 
 func LoadConfig() *Config {
@@ -16,14 +18,18 @@ func LoadConfig() *Config {
 
 	apiKey := os.Getenv("DADATA_API_KEY")
 	secretKey := os.Getenv("DADATA_SECRET_KEY")
+	redisHost := os.Getenv("REDIS_HOST")
+	redisPort := os.Getenv("REDIS_PORT")
 
-	if apiKey == "" || secretKey == "" {
-		log.Fatal("DADATA_API_KEY и DADATA_SECRET_KEY не заданы")
+	if apiKey == "" || secretKey == "" || redisHost == "" || redisPort == "" {
+		log.Fatal("переменные окружения не заданы")
 	}
 
 	return &Config{
 		ApiKey:    apiKey,
 		SecretKey: secretKey,
+		RedisHost: redisHost,
+		RedisPort: redisPort,
 	}
 
 }
