@@ -19,13 +19,18 @@ FROM alpine:latest
 WORKDIR /root/
 
 # Устанавливаем зависимости
-RUN apk --no-cache add ca-certificates redis
+RUN apk --no-cache add ca-certificates redis \
+  && apk --no-cache add graphviz go
 
 # Копируем скомпилированный бинарник (без лишних файлов)
 COPY --from=builder /app/server .
 
 # Копируем файл .env
 COPY .env ./
+
+COPY profile.pb.gz /root/profile.pb.gz
+COPY trace.out /root/trace.out
+COPY profile.svg /root/profile.svg
 
 # Открываем порт
 EXPOSE 8080

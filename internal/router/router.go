@@ -29,5 +29,7 @@ func SetupRouter(h *handler.AddressHandler, tokenAuth *jwtauth.JWTAuth) *chi.Mux
 	// Swagger UI
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
+	r.Mount("/mycustompath/pprof", PprofRouter(tokenAuth))
+
 	return r
 }

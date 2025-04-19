@@ -18,7 +18,7 @@ func NewGeoServer(addr string, r *chi.Mux) *GeoServer {
 			Addr:         addr,
 			Handler:      r,
 			ReadTimeout:  10 * time.Second,
-			WriteTimeout: 10 * time.Second,
+			WriteTimeout: 30 * time.Second,
 		},
 	}
 }
