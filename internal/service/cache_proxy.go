@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"geoservise-jwt/internal/metrics"
 	"geoservise-jwt/internal/model"
 	"github.com/redis/go-redis/v9"
 	"time"
@@ -24,6 +25,8 @@ func NewCachedGeoService(real GeoService, cache *redis.Client, ttl time.Duration
 }
 
 func (c *CachedGeoService) Search(ctx context.Context, query string) ([]*model.Address, error) {
+	start := time.Now()
+
 	key := fmt.Sprintf("search:%s", query)
 	//fmt.Println("🔍 Ищу в Redis ключ:", key)
 	cached, err := c.cache.Get(ctx, key).Result()
@@ -34,6 +37,7 @@ func (c *CachedGeoService) Search(ctx context.Context, query string) ([]*model.A
 			return result, nil
 		}
 	}
+	metrics.CacheDuration.WithLabelValues("get").Observe(time.Since(start).Seconds())
 	//fmt.Println("Не найдено в кэше, идём в API:", key)
 
 	result, err := c.real.Search(ctx, query)
@@ -57,6 +61,8 @@ func (c *CachedGeoService) Search(ctx context.Context, query string) ([]*model.A
 }
 
 func (c *CachedGeoService) Geocode(ctx context.Context, latStr, lngStr string) ([]*model.Address, error) {
+	start := time.Now()
+
 	key := fmt.Sprintf("geocode:%s:%s", latStr, lngStr)
 	cached, err := c.cache.Get(ctx, key).Result()
 	if err == nil {
@@ -65,6 +71,7 @@ func (c *CachedGeoService) Geocode(ctx context.Context, latStr, lngStr string) (
 			return result, nil
 		}
 	}
+	metrics.CacheDuration.WithLabelValues("get").Observe(time.Since(start).Seconds())
 
 	result, err := c.real.Geocode(ctx, latStr, lngStr)
 	if err != nil {

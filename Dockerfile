@@ -1,5 +1,5 @@
 # Используем минимальный образ Golang
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
@@ -9,6 +9,8 @@ RUN go mod tidy && go mod download
 
 # Копируем исходный код (изменение здесь не ломает кэш `go mod download`)
 COPY . .
+
+RUN go mod tidy
 
 # Компилируем бинарник
 RUN go build -o server ./cmd/geo/main.go

@@ -4,6 +4,7 @@ import (
 	"geoservise-jwt/internal/auth"
 	"geoservise-jwt/internal/cache"
 	"geoservise-jwt/internal/handler"
+	"geoservise-jwt/internal/metrics"
 	"geoservise-jwt/internal/responder"
 	"geoservise-jwt/internal/router"
 	"geoservise-jwt/internal/service"
@@ -21,6 +22,9 @@ type App struct {
 }
 
 func NewApp(apiKey, secretKey, redisHost, redisPort string) *App {
+
+	metrics.Init()
+
 	// init Dadata client
 	creds := client.Credentials{
 		ApiKeyValue:    apiKey,
