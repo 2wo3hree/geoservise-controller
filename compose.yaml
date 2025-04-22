@@ -4,17 +4,37 @@ services:
     ports:
       - "8080:8080"
     depends_on:
+      - db
       - redis
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
+      - redis-data_1:/data
+
+  db:
+    image: postgres:15
+    container_name: pg_petstore
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data_1:/var/lib/postgresql/data
 
 volumes:
-  redis-data:
+  redis-data_1:
+  pg_data_1:

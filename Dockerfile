@@ -1,5 +1,5 @@
 # Используем минимальный образ Golang
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
@@ -10,6 +10,8 @@ RUN go mod tidy && go mod download
 # Копируем исходный код (изменение здесь не ломает кэш `go mod download`)
 COPY . .
 
+RUN go mod tidy
+
 # Компилируем бинарник
 RUN go build -o server ./cmd/geo/main.go
 
@@ -19,6 +21,7 @@ FROM alpine:latest
 WORKDIR /root/
 
 # Устанавливаем зависимости
+RUN apk --no-cache add ca-certificates postgresql-client
 RUN apk --no-cache add ca-certificates redis \
   && apk --no-cache add graphviz go
 
@@ -28,9 +31,17 @@ COPY --from=builder /app/server .
 # Копируем файл .env
 COPY .env ./
 
+COPY --from=builder /app/internal/infrastructure/db/migrations /root/internal/infrastructure/db/migrations
+
 COPY profile.pb.gz /root/profile.pb.gz
 COPY trace.out /root/trace.out
 COPY profile.svg /root/profile.svg
+
+# wait-for-postgres
+COPY wait-for-postgres.sh .
+RUN chmod +x wait-for-postgres.sh
+
+ENTRYPOINT ["./wait-for-postgres.sh"]
 
 # Открываем порт
 EXPOSE 8080

@@ -2,7 +2,7 @@ package shutdown
 
 import (
 	"context"
-	"geoservise-jwt/internal/server"
+	"geoservise-jwt/internal/infrastructure/server"
 	"log"
 	"net/http"
 	"os"

@@ -26,6 +26,13 @@ definitions:
       street:
         type: string
     type: object
+  geoservise-jwt_internal_model.CreateUserRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   geoservise-jwt_internal_model.RequestAddressSearch:
     properties:
       query:
@@ -45,16 +52,11 @@ definitions:
           $ref: '#/definitions/geoservise-jwt_internal_model.Address'
         type: array
     type: object
-  internal_auth.Credentials:
+  internal_infrastructure_auth.Credentials:
     properties:
       password:
         type: string
       username:
-        type: string
-    type: object
-  internal_auth.TokenResponse:
-    properties:
-      token:
         type: string
     type: object
 host: localhost:8080
@@ -141,24 +143,26 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: User credentials
+      - description: Login credentials
         in: body
-        name: request
+        name: credentials
         required: true
         schema:
-          $ref: '#/definitions/internal_auth.Credentials'
+          $ref: '#/definitions/internal_infrastructure_auth.Credentials'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_auth.TokenResponse'
+            additionalProperties:
+              type: string
+            type: object
         "400":
           description: bad request
           schema:
             type: string
-      summary: LoginHandler user
+      summary: Login user
       tags:
       - auth
   /register:
@@ -166,24 +170,29 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: User credentials
+      - description: User name and password
         in: body
-        name: request
+        name: user
         required: true
         schema:
-          $ref: '#/definitions/internal_auth.Credentials'
+          $ref: '#/definitions/geoservise-jwt_internal_model.CreateUserRequest'
       produces:
       - application/json
       responses:
         "201":
-          description: user registered
+          description: Created
           schema:
-            type: string
+            additionalProperties: true
+            type: object
         "400":
           description: bad request
           schema:
             type: string
-      summary: RegisterHandler new user
+        "500":
+          description: internal error
+          schema:
+            type: string
+      summary: Create user
       tags:
       - auth
 securityDefinitions:

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"geoservise-jwt/internal/model"
-	"geoservise-jwt/internal/responder"
-	"geoservise-jwt/internal/service"
+	"geoservise-jwt/internal/usecase/responder"
+	"geoservise-jwt/internal/usecase/service"
 	"net/http"
 )
 

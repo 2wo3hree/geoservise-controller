@@ -140,15 +140,15 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "LoginHandler user",
+                "summary": "Login user",
                 "parameters": [
                     {
-                        "description": "User credentials",
-                        "name": "request",
+                        "description": "Login credentials",
+                        "name": "credentials",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_auth.Credentials"
+                            "$ref": "#/definitions/internal_infrastructure_auth.Credentials"
                         }
                     }
                 ],
@@ -156,7 +156,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_auth.TokenResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "400": {
@@ -179,27 +182,34 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "RegisterHandler new user",
+                "summary": "Create user",
                 "parameters": [
                     {
-                        "description": "User credentials",
-                        "name": "request",
+                        "description": "User name and password",
+                        "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_auth.Credentials"
+                            "$ref": "#/definitions/geoservise-jwt_internal_model.CreateUserRequest"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "user registered",
+                        "description": "Created",
                         "schema": {
-                            "type": "string"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
                         "description": "bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal error",
                         "schema": {
                             "type": "string"
                         }
@@ -248,6 +258,17 @@ const docTemplate = `{
                 }
             }
         },
+        "geoservise-jwt_internal_model.CreateUserRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "geoservise-jwt_internal_model.RequestAddressSearch": {
             "type": "object",
             "properties": {
@@ -278,21 +299,13 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_auth.Credentials": {
+        "internal_infrastructure_auth.Credentials": {
             "type": "object",
             "properties": {
                 "password": {
                     "type": "string"
                 },
                 "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "internal_auth.TokenResponse": {
-            "type": "object",
-            "properties": {
-                "token": {
                     "type": "string"
                 }
             }

@@ -7,29 +7,36 @@ import (
 )
 
 type Config struct {
-	ApiKey    string
-	SecretKey string
-	RedisHost string
-	RedisPort string
+	ApiKey     string
+	SecretKey  string
+	RedisHost  string
+	RedisPort  string
+	DBUser     string
+	DBPassword string
+	DBName     string
+	DBPort     string
+	DBHost     string
 }
 
 func LoadConfig() *Config {
 	_ = godotenv.Load()
 
-	apiKey := os.Getenv("DADATA_API_KEY")
-	secretKey := os.Getenv("DADATA_SECRET_KEY")
-	redisHost := os.Getenv("REDIS_HOST")
-	redisPort := os.Getenv("REDIS_PORT")
-
-	if apiKey == "" || secretKey == "" || redisHost == "" || redisPort == "" {
-		log.Fatal("переменные окружения не заданы")
+	cfg := &Config{
+		DBUser:     os.Getenv("DB_USER"),
+		DBPassword: os.Getenv("DB_PASSWORD"),
+		DBName:     os.Getenv("DB_NAME"),
+		DBPort:     os.Getenv("DB_PORT"),
+		DBHost:     os.Getenv("DB_HOST"),
+		ApiKey:     os.Getenv("DADATA_API_KEY"),
+		SecretKey:  os.Getenv("DADATA_SECRET_KEY"),
+		RedisPort:  os.Getenv("REDIS_PORT"),
+		RedisHost:  os.Getenv("REDIS_HOST"),
 	}
 
-	return &Config{
-		ApiKey:    apiKey,
-		SecretKey: secretKey,
-		RedisHost: redisHost,
-		RedisPort: redisPort,
+	if cfg.DBUser == "" || cfg.DBPassword == "" || cfg.DBName == "" || cfg.DBHost == "" || cfg.DBPort == "" || cfg.ApiKey == "" || cfg.SecretKey == "" || cfg.RedisPort == "" || cfg.RedisHost == "" {
+		log.Fatal("Не заданы переменные окружения")
 	}
+
+	return cfg
 
 }

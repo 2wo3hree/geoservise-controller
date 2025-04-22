@@ -12,14 +12,14 @@ import (
 	_ "geoservise-jwt/docs"
 	"geoservise-jwt/internal/app"
 	"geoservise-jwt/internal/config"
-	"geoservise-jwt/internal/server"
-	"geoservise-jwt/internal/shutdown"
+	"geoservise-jwt/internal/infrastructure/server"
+	"geoservise-jwt/internal/infrastructure/shutdown"
 )
 
 func main() {
 	cfg := config.LoadConfig()
 
-	application := app.NewApp(cfg.ApiKey, cfg.SecretKey, cfg.RedisHost, cfg.RedisPort)
+	application := app.NewApp(cfg)
 
 	s := server.NewGeoServer(":8080", application.Router)
 	shutdown.Gracefully(s)
