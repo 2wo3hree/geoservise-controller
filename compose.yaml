@@ -35,6 +35,13 @@ services:
     volumes:
       - pg_data_1:/var/lib/postgresql/data
 
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
 volumes:
   redis-data_1:
   pg_data_1:

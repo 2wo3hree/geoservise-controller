@@ -3,10 +3,12 @@ package service
 import (
 	"context"
 	"fmt"
+	"geoservise-jwt/internal/infrastructure/metrics"
 	"geoservise-jwt/internal/model"
 	"github.com/ekomobile/dadata/v2/api/suggest"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type GeoService interface {
@@ -25,6 +27,8 @@ func NewService(api *suggest.Api) *Service {
 }
 
 func (s *Service) Search(ctx context.Context, query string) ([]*model.Address, error) {
+	start := time.Now()
+
 	if strings.TrimSpace(query) == "" {
 		return nil, fmt.Errorf("query пустой")
 	}
@@ -36,6 +40,8 @@ func (s *Service) Search(ctx context.Context, query string) ([]*model.Address, e
 	if err != nil {
 		return nil, err
 	}
+
+	metrics.ExternalAPIDuration.WithLabelValues("search").Observe(time.Since(start).Seconds())
 
 	addresses := make([]*model.Address, 0, len(suggestions))
 	for _, sugg := range suggestions {
@@ -59,6 +65,8 @@ func (s *Service) Search(ctx context.Context, query string) ([]*model.Address, e
 }
 
 func (s *Service) Geocode(ctx context.Context, latStr, lngStr string) ([]*model.Address, error) {
+	start := time.Now()
+
 	lat, err1 := strconv.ParseFloat(latStr, 64)
 	lng, err2 := strconv.ParseFloat(lngStr, 64)
 	if err1 != nil || err2 != nil || lat == 0 || lng == 0 {
@@ -73,6 +81,8 @@ func (s *Service) Geocode(ctx context.Context, latStr, lngStr string) ([]*model.
 	if err != nil {
 		return nil, err
 	}
+
+	metrics.ExternalAPIDuration.WithLabelValues("search").Observe(time.Since(start).Seconds())
 
 	addresses := make([]*model.Address, 0, len(suggestions))
 	for _, sugg := range suggestions {

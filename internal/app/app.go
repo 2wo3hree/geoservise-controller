@@ -7,6 +7,7 @@ import (
 	"geoservise-jwt/internal/delivery/router"
 	"geoservise-jwt/internal/infrastructure/cache"
 	db2 "geoservise-jwt/internal/infrastructure/db"
+	"geoservise-jwt/internal/infrastructure/metrics"
 	"geoservise-jwt/internal/infrastructure/repository/postgres"
 	"geoservise-jwt/internal/usecase/responder"
 	service2 "geoservise-jwt/internal/usecase/service"
@@ -21,6 +22,7 @@ type App struct {
 }
 
 func NewApp(cfg *config.Config) *App {
+	metrics.Init()
 	// int db
 	pool := db2.NewPostgres(cfg)
 

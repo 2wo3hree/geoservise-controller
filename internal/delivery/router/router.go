@@ -3,11 +3,13 @@ package router
 import (
 	handler2 "geoservise-jwt/internal/delivery/handler"
 	auth2 "geoservise-jwt/internal/infrastructure/auth"
+	custommetrics "geoservise-jwt/internal/infrastructure/middleware"
 	"geoservise-jwt/internal/usecase/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/jwtauth"
-	"github.com/swaggo/http-swagger"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"net/http"
 )
 
@@ -26,6 +28,7 @@ func SetupRouter(h *handler2.AddressHandler, userHandler *handler2.UserHandler, 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(custommetrics.MetricsMiddleware)
 
 	auth2.InitJWT()
 
@@ -48,6 +51,8 @@ func SetupRouter(h *handler2.AddressHandler, userHandler *handler2.UserHandler, 
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	r.Mount("/mycustompath/pprof", PprofRouter(authHandler.TokenAuth))
+
+	r.Handle("/metrics", promhttp.Handler())
 
 	return r
 }
