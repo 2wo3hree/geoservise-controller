@@ -1,4 +1,4 @@
-FROM grafana/grafana:latest
+FROM --platform=$BUILDPLATFORM grafana/grafana:latest
 
 COPY ./provisioning /etc/grafana/provisioning
 COPY ./dashboards /var/lib/grafana/dashboards

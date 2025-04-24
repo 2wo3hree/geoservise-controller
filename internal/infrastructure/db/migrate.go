@@ -17,7 +17,7 @@ func RunMigrations(dbURL string) {
 	}
 
 	if err := m.Up(); err != nil {
-		log.Fatalf("ошибка применения миграций: %v", err)
+		log.Println(err)
 	}
 
 	log.Println("Миграции применены успешно")
