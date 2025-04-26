@@ -43,7 +43,7 @@ services:
       - "9090:9090"
 
   grafana:
-    image: gon4arov2312/grafana:latest
+    image: gon4arov2312/grafana:1.0.0
     container_name: grafana
     ports:
       - "3000:3000"
@@ -54,8 +54,8 @@ services:
 #    environment:
 #      - GF_SECURITY_ADMIN_USER=admin
 #      - GF_SECURITY_ADMIN_PASSWORD=admin
-    depends_on:
-      - prometheus
+#    depends_on:
+#      - prometheus
 
 volumes:
   redis-data_1:
